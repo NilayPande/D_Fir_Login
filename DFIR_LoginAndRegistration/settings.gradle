@@ -1,2 +1,0 @@
-include ':app'
-rootProject.name = "D_Fir_Login"
