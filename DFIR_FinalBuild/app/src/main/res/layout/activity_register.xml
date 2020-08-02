@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/belu"
     tools:context=".RegisterActivity">
 
 
@@ -111,6 +112,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.106"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/bag"
         app:layout_constraintTop_toBottomOf="@+id/txtConfirmPassword" />
 
     <Button
@@ -124,6 +126,7 @@
         android:layout_marginRight="20dp"
         android:text="Login"
         app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bag"
         app:layout_constraintStart_toEndOf="@+id/button3"
         app:layout_constraintTop_toBottomOf="@+id/txtConfirmPassword" />
 

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SpeechActivity"
+    android:background="@drawable/belu"
     android:padding="5dp">
 
     <Button
@@ -12,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Go to Language and Input Settings"
+        android:background="@drawable/bag"
         android:textAllCaps="false"
         android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true" />
