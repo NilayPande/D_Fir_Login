@@ -18,14 +18,14 @@
         <activity android:name=".UploadActivity" />
         <activity android:name=".NewCaseActivity" />
         <activity android:name=".SearchActivity" />
-        <activity android:name=".SplashActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".FaqActivity" />
         <activity android:name=".SpeechActivity" />
         <activity android:name=".DashboardActivity" />
         <activity android:name=".OtpActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
