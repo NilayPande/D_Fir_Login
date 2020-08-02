@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,8 +26,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,6 +33,8 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -52,12 +51,13 @@ public class UploadActivity extends AppCompatActivity {
     private Cipher cipher;
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
-    private Uri uri, output_uri;
+    private Uri uri;
     private TextView filename;
+    private Calendar calendar;
     private SecretKey secretKey;
     private String name, sha256Hash, id, policeName, caseFileName;
-    private File outputFile;
     private EditText txtEnterCaseId;
+    private byte[] encryptedData;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
@@ -80,6 +80,7 @@ public class UploadActivity extends AppCompatActivity {
         storageReference = firebaseStorage.getReference();
         databaseReference = firebaseDatabase.getReference();
 
+        calendar = Calendar.getInstance();
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
         browse.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +126,7 @@ public class UploadActivity extends AppCompatActivity {
         if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             uri = data.getData();
             String path = null;
+
             if (uri != null) {
                 path = uri.getPath();
             }
@@ -189,11 +191,17 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     private void UploadFile() {
+        SimpleDateFormat dateFormat;
 
-        name = name.substring(0, name.indexOf("."));
-        caseFileName = name + "_(" + policeName + "-" + id + ")";
+        dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+        String date = dateFormat.format(calendar.getTime());
 
-        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(caseFileName).putFile(output_uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        String name1 = name.substring(0, name.indexOf("."));
+        String name2 = name.substring(name.indexOf("."), name.length());
+        caseFileName = name1 + "_(" + policeName + " - " + id + ")" + "_(" + date + ")" + name2;
+        String caseFileName2 = name1 + "_(" + policeName + " - " + id + ")" + "_(" + date + ")";
+
+        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(caseFileName).putBytes(encryptedData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
@@ -208,7 +216,7 @@ public class UploadActivity extends AppCompatActivity {
         //name = name.substring(0, name.indexOf("."));
         //caseFileName = caseFileName.substring(0, caseFileName.indexOf("."));
 
-        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName).setValue(sha256Hash);
+        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName2).setValue(sha256Hash);
     }
 
     private void encryptFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
@@ -226,18 +234,17 @@ public class UploadActivity extends AppCompatActivity {
         cipher = Cipher.getInstance(ALGO);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
 
-
-        outputFile = new File(Environment.getExternalStorageState(), caseFileName);
+        //outputFile = new File(Environment.getExternalStorageState(), caseFileName);
 
         InputStream iStream = getContentResolver().openInputStream(uri);
         byte[] inputData = getBytes(iStream);
 
-        byte[] encryptedData = cipher.doFinal(inputData);
-        FileOutputStream fos = new FileOutputStream(outputFile);
+        encryptedData = cipher.doFinal(inputData);
+        /*FileOutputStream fos = new FileOutputStream(outputFile);
         fos.write(encryptedData);
-        fos.close();
+        fos.close();*/
 
-        output_uri = Uri.fromFile(outputFile);
+        //output_uri = Uri.fromFile(outputFile);
     }
 
     private byte[] getBytes(InputStream inputStream) throws IOException {

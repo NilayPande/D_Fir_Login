@@ -32,7 +32,7 @@
         android:id="@+id/imageButton"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:background="#FFFFF"
+        android:background="#FFFF"
         app:srcCompat="?attr/actionModeCloseDrawable" />
 
     <ImageView
