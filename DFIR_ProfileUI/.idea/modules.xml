@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DFIR_ProfileUI.iml" filepath="$PROJECT_DIR$/.idea/modules/DFIR_ProfileUI.iml" group="DFIR_ProfileUI" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DFIR_ProfileUI-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DFIR_ProfileUI-app.iml" group="DFIR_ProfileUI/app" />
       <module fileurl="file://$PROJECT_DIR$/ProfileUI.iml" filepath="$PROJECT_DIR$/ProfileUI.iml" group="ProfileUI" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Profile_UI_02.iml" filepath="$PROJECT_DIR$/.idea/modules/Profile_UI_02.iml" group="Profile_UI_02" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Profile_UI_02-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Profile_UI_02-app.iml" group="Profile_UI_02/app" />
