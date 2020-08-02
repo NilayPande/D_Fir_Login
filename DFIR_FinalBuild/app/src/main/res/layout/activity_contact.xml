@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:text="CONTACT US"
             android:textAlignment="center"
-            android:textSize="24dp" />
+            android:textSize="24dp"
+            android:gravity="center_horizontal" />
 
     </LinearLayout>
 
