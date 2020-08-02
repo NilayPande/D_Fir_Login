@@ -1,9 +1,9 @@
 package com.example.d_fir_login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.ExpandableListView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class FaqActivity extends AppCompatActivity {
 

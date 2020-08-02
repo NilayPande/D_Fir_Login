@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DisplayCaseActivity"></activity>
+
+        <activity android:name=".DisplayCaseActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".NewCaseActivity" />
         <activity android:name=".SearchActivity" />

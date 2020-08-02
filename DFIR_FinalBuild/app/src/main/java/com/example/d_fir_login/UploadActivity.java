@@ -1,24 +1,13 @@
 package com.example.d_fir_login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.os.Bundle;
-
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,11 +22,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -48,7 +35,7 @@ public class UploadActivity extends AppCompatActivity {
     private static final int PICK_FILE_REQUEST = 2;
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
-    private Uri uri;                            // URI's are actually urls meant for local storage
+    private Uri uri;
     private TextView filename;
     private String name;
     private String sha256Hash;
@@ -160,8 +147,7 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     private void UploadFile() {
-        StorageReference storageReference = firebaseStorage.getReference();          //returns root path
-
+        StorageReference storageReference = firebaseStorage.getReference();
 
         storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(name).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -174,8 +160,9 @@ public class UploadActivity extends AppCompatActivity {
                 Toast.makeText(UploadActivity.this, "Uploading Failed!", Toast.LENGTH_SHORT).show();
             }
         });
+
        name = name.substring(0, name.indexOf("."));
         DatabaseReference databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child("Hrithik").setValue(sha256Hash);
+        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(name).setValue(sha256Hash);
     }
 }

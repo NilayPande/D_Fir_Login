@@ -1,8 +1,8 @@
 package com.example.d_fir_login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DisplayCaseActivity extends AppCompatActivity {
 
