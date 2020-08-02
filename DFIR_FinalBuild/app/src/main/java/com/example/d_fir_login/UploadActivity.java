@@ -37,7 +37,7 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private Uri uri;
     private TextView filename;
-    private String name, id, policeName, sha256Hash;
+    private String name, sha256Hash, id, policeName;
     private EditText txtEnterCaseId;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
@@ -53,14 +53,16 @@ public class UploadActivity extends AppCompatActivity {
         filename = findViewById(R.id.filename);
         filename.setVisibility(View.VISIBLE);
 
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        id = extras.getString("EmployeeId");
+        policeName = extras.getString("OfficerName");
+
 
         storageReference = firebaseStorage.getReference();
         databaseReference = firebaseDatabase.getReference();
 
-        /*Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        id = extras.getString("EmployeeId");
-        policeName = extras.getString("OfficerName");*/
+        /**/
 
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
@@ -159,9 +161,10 @@ public class UploadActivity extends AppCompatActivity {
 
     private void UploadFile() {
 
-        //String caseFileName = name + "_(" + policeName + "-" + id + ")";
+        name = name.substring(0, name.indexOf("."));
+        String caseFileName = name + "_(" + policeName + "-" + id + ")";
 
-        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(name).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(caseFileName).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
@@ -173,8 +176,9 @@ public class UploadActivity extends AppCompatActivity {
             }
         });
 
-       name = name.substring(0, name.indexOf("."));
+        //name = name.substring(0, name.indexOf("."));
+        //caseFileName = caseFileName.substring(0, caseFileName.indexOf("."));
 
-        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(name).setValue(sha256Hash);
+        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName).setValue(sha256Hash);
     }
 }

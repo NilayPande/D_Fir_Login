@@ -61,15 +61,16 @@ public class MainActivity extends AppCompatActivity {
                     User login = dataSnapshot.child(EmployeeId).getValue(User.class);
                     if(login.getPassword().equals(Password)){
 
-                        /*Intent intent1 = new Intent(MainActivity.this, UploadActivity.class);
                         String officerName = login.getName();
-                        Bundle extras = new Bundle();
-                        extras.putString("EmployeeId", EmployeeId);
-                        extras.putString("OfficerName", officerName);
-                        intent1.putExtras(extras);*/
 
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+
+                        Bundle extras = new Bundle();
+                        extras.putString("EmployeeId", EmployeeId);
+                        extras.putString("OfficerName", officerName);
+                        intent.putExtras(extras);
+
                         startActivity(intent);
                     }
                     else
