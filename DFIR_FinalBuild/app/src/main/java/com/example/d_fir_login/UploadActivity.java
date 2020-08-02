@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,20 +26,39 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 public class UploadActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_REQUEST = 2;
+    private static final String ALGO = "AES";
+    private Cipher cipher;
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
     private Uri uri;
     private TextView filename;
-    private String name, sha256Hash, id, policeName;
+    private Calendar calendar;
+    private SecretKey secretKey;
+    private String name, sha256Hash, id, policeName, caseFileName;
     private EditText txtEnterCaseId;
+    private byte[] encryptedData;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
@@ -58,12 +78,10 @@ public class UploadActivity extends AppCompatActivity {
         id = extras.getString("EmployeeId");
         policeName = extras.getString("OfficerName");
 
-
         storageReference = firebaseStorage.getReference();
         databaseReference = firebaseDatabase.getReference();
 
-        /**/
-
+        calendar = Calendar.getInstance();
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
         browse.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +127,7 @@ public class UploadActivity extends AppCompatActivity {
         if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             uri = data.getData();
             String path = null;
+
             if (uri != null) {
                 path = uri.getPath();
             }
@@ -120,7 +139,20 @@ public class UploadActivity extends AppCompatActivity {
 
             try {
                 HashGenerator();
-            } catch (Exception e) {
+                encryptFile();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (NoSuchPaddingException e) {
+                e.printStackTrace();
+            } catch (InvalidAlgorithmParameterException e) {
+                e.printStackTrace();
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            } catch (BadPaddingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalBlockSizeException e) {
                 e.printStackTrace();
             }
 
@@ -160,11 +192,17 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     private void UploadFile() {
+        SimpleDateFormat dateFormat;
 
-        name = name.substring(0, name.indexOf("."));
-        String caseFileName = name + "_(" + policeName + "-" + id + ")";
+        dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+        String date = dateFormat.format(calendar.getTime());
 
-        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(caseFileName).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        String name1 = name.substring(0, name.indexOf("."));
+        String name2 = name.substring(name.indexOf("."), name.length());
+        caseFileName = name1 + "_(" + policeName + " - " + id + ")" + "_(" + date + ")" + name2;
+        String caseFileName2 = name1 + "_(" + policeName + " - " + id + ")" + "_(" + date + ")";
+
+        storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(caseFileName).putBytes(encryptedData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
@@ -179,6 +217,49 @@ public class UploadActivity extends AppCompatActivity {
         //name = name.substring(0, name.indexOf("."));
         //caseFileName = caseFileName.substring(0, caseFileName.indexOf("."));
 
-        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName).setValue(sha256Hash);
+        String str = secretKey.toString();
+        String encoded = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+
+        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName2).setValue(sha256Hash);
+        databaseReference.child("Keys").child(txtEnterCaseId.getText().toString()).child(caseFileName2).setValue(encoded);
+    }
+
+    private void encryptFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGO);
+        keyGenerator.init(256);
+
+        secretKey = keyGenerator.generateKey();
+
+        byte[] iv = new byte[256/8];
+        SecureRandom secureRandom = new SecureRandom();
+
+        secureRandom.nextBytes(iv);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        cipher = Cipher.getInstance(ALGO);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+
+        //outputFile = new File(Environment.getExternalStorageState(), caseFileName);
+
+        InputStream iStream = getContentResolver().openInputStream(uri);
+        byte[] inputData = getBytes(iStream);
+
+        encryptedData = cipher.doFinal(inputData);
+        /*FileOutputStream fos = new FileOutputStream(outputFile);
+        fos.write(encryptedData);
+        fos.close();*/
+
+        //output_uri = Uri.fromFile(outputFile);
+    }
+
+    private byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+
+        while ((len = inputStream.read(buffer)) != -1)
+            byteArrayOutputStream.write(buffer, 0, len);
+
+        return byteArrayOutputStream.toByteArray();
     }
 }
