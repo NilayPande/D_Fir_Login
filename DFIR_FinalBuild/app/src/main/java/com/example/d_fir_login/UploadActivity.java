@@ -40,6 +40,8 @@ public class UploadActivity extends AppCompatActivity {
     private String name;
     private String sha256Hash;
     private EditText txtEnterCaseId;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,10 @@ public class UploadActivity extends AppCompatActivity {
         Button upload = findViewById(R.id.upload);
         filename = findViewById(R.id.filename);
         filename.setVisibility(View.VISIBLE);
+
+
+        storageReference = firebaseStorage.getReference();
+        databaseReference = firebaseDatabase.getReference();
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
         browse.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +100,7 @@ public class UploadActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
-            uri = data.getData();               //return uri of selected file
+            uri = data.getData();
             String path = null;
             if (uri != null) {
                 path = uri.getPath();
@@ -147,12 +153,11 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     private void UploadFile() {
-        StorageReference storageReference = firebaseStorage.getReference();
 
         storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(name).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -162,7 +167,7 @@ public class UploadActivity extends AppCompatActivity {
         });
 
        name = name.substring(0, name.indexOf("."));
-        DatabaseReference databaseReference = firebaseDatabase.getReference();
+
         databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(name).setValue(sha256Hash);
     }
 }
