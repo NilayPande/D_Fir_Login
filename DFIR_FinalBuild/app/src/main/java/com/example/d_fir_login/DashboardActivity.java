@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class DashboardActivity extends AppCompatActivity {
     Button my_profile, speech,  contact_us, faq, gen_65b, scan, my_case, upload;
+    private String id, policeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,11 @@ public class DashboardActivity extends AppCompatActivity {
         scan = findViewById(R.id.scan);
         my_case = findViewById(R.id.my_case);
         upload = findViewById(R.id.upload);
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        id = extras.getString("EmployeeId");
+        policeName = extras.getString("OfficerName");
 
         my_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +67,12 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, UploadActivity.class);
+
+                Bundle extras1 = new Bundle();
+                extras1.putString("EmployeeId", id);
+                extras1.putString("OfficerName", policeName);
+                intent.putExtras(extras1);
+
                 startActivity(intent);
             }
         });

@@ -60,8 +60,17 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.child(EmployeeId).exists()){
                     User login = dataSnapshot.child(EmployeeId).getValue(User.class);
                     if(login.getPassword().equals(Password)){
+
+                        String officerName = login.getName();
+
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+
+                        Bundle extras = new Bundle();
+                        extras.putString("EmployeeId", EmployeeId);
+                        extras.putString("OfficerName", officerName);
+                        intent.putExtras(extras);
+
                         startActivity(intent);
                     }
                     else
