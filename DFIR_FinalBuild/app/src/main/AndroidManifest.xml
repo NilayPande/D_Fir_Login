@@ -14,8 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".UploadActivity"></activity>
+
         <activity android:name=".NewCaseActivity" />
         <activity android:name=".SearchActivity" />
+        <activity android:name=".SplashActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".FaqActivity" />
         <activity android:name=".SpeechActivity" />
