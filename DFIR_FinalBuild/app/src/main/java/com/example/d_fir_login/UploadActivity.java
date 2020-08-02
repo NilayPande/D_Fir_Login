@@ -51,8 +51,6 @@ public class UploadActivity extends AppCompatActivity {
     private Uri uri;                            // URI's are actually urls meant for local storage
     private TextView filename;
     private String name;
-    private ProgressBar progressBar;
-    private TextView progress_status;
     private String sha256Hash;
     private EditText txtEnterCaseId;
 
@@ -65,11 +63,6 @@ public class UploadActivity extends AppCompatActivity {
         Button browse = findViewById(R.id.browse);
         Button upload = findViewById(R.id.upload);
         filename = findViewById(R.id.filename);
-        progressBar = findViewById(R.id.progressBar);
-        progress_status = findViewById(R.id.progress_status);
-
-        progressBar.setVisibility(View.GONE);
-        progress_status.setVisibility(View.GONE);
         filename.setVisibility(View.VISIBLE);
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
@@ -119,10 +112,10 @@ public class UploadActivity extends AppCompatActivity {
             if (uri != null) {
                 path = uri.getPath();
             }
-            /*if (path != null) {
+            if (path != null) {
                 name = path.substring(path.lastIndexOf("/") + 1);
-            }*/
-            name = findFileName(uri);
+            }
+            name = name.substring((name.indexOf(":")) + 1);
             filename.setText(name);
 
             try {
@@ -169,56 +162,20 @@ public class UploadActivity extends AppCompatActivity {
     private void UploadFile() {
         StorageReference storageReference = firebaseStorage.getReference();          //returns root path
 
-        progressBar.setVisibility(View.VISIBLE);
-        progress_status.setVisibility(View.VISIBLE);
 
         storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(name).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                progressBar.setVisibility(View.GONE);
-                progress_status.setVisibility(View.GONE);
+                Toast.makeText(UploadActivity.this, "Upload Successful", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(UploadActivity.this, "Uploading Failed!", Toast.LENGTH_SHORT).show();
             }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                progressBar.setProgress((int) progress);
-                progress_status.setText((int) progress + "%");
-            }
         });
-
        name = name.substring(0, name.indexOf("."));
         DatabaseReference databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(name).setValue(sha256Hash);
-    }
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = getContentResolver();
-
-        if (uri.getScheme() == ContentResolver.SCHEME_CONTENT)
-            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(contentResolver.getType(uri));
-        else
-            return MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
-
-    }
-
-    private String findFileName(Uri uri) {
-        String displayName = null;
-
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
-
-        try {
-            if (cursor != null && cursor.moveToFirst())
-                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-        }
-        finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return displayName;
+        databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child("Hrithik").setValue(sha256Hash);
     }
 }

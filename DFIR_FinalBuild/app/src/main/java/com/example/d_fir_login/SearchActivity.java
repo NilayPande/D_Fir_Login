@@ -55,6 +55,11 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+    public void showCase(View view){
+        Intent intent = new Intent(SearchActivity.this, DisplayCaseActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -108,4 +113,5 @@ public class SearchActivity extends AppCompatActivity {
         AdapterClass adapterClass = new AdapterClass(arrayList);
         recyclerView.setAdapter(adapterClass);
     }
+
 }
