@@ -37,8 +37,7 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private Uri uri;
     private TextView filename;
-    private String name;
-    private String sha256Hash;
+    private String name, id, policeName, sha256Hash;
     private EditText txtEnterCaseId;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
@@ -57,6 +56,12 @@ public class UploadActivity extends AppCompatActivity {
 
         storageReference = firebaseStorage.getReference();
         databaseReference = firebaseDatabase.getReference();
+
+        /*Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        id = extras.getString("EmployeeId");
+        policeName = extras.getString("OfficerName");*/
+
 
         txtEnterCaseId = findViewById(R.id.txtEnterCaseId);
         browse.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +158,8 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     private void UploadFile() {
+
+        //String caseFileName = name + "_(" + policeName + "-" + id + ")";
 
         storageReference.child("Cases").child(txtEnterCaseId.getText().toString()).child(name).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
