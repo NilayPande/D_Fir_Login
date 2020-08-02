@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">D_Fir_Login</string>
+    <string name="app_name">DFir</string>
     <string-array name="Names">
         <item>Mahila Police Volunteer</item>
         <item>Forest Guards</item>

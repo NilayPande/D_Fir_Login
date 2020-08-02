@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class DashboardActivity extends AppCompatActivity {
-    Button my_profile, speech,  contact_us, faq, gen_65b, scan, my_case;
+    Button my_profile, speech,  contact_us, faq, gen_65b, scan, my_case, upload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +22,7 @@ public class DashboardActivity extends AppCompatActivity {
         gen_65b = findViewById(R.id.gen_65b);
         scan = findViewById(R.id.scan);
         my_case = findViewById(R.id.my_case);
+        upload = findViewById(R.id.upload);
 
         my_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,23 +48,23 @@ public class DashboardActivity extends AppCompatActivity {
             }
 
         });
-/*
-        .setOnClickListener(new View.OnClickListener() {
+
+        my_case.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
 
         });
-        my_profile.setOnClickListener(new View.OnClickListener() {
+        upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, UploadActivity.class);
                 startActivity(intent);
             }
-
         });
+        /*
         my_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
