@@ -43,7 +43,8 @@
         android:layout_marginEnd="279dp"
         android:layout_marginBottom="424dp"
         android:src="@drawable/images"
-        />
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="279dp" />
 
     <ImageView
         android:layout_width="110dp"
@@ -52,7 +53,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="276dp"
         android:layout_marginBottom="278dp"
-        android:src="@drawable/download" />
+        android:src="@drawable/download"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="276dp" />
 
 
     <TextView
@@ -64,7 +67,10 @@
         android:layout_marginBottom="533dp"
         android:text="* Refer FAQ's for qureies related application working in general"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        android:layout_marginRight="9dp"
+        android:layout_alignParentRight="true" />
 
     <TextView
         android:layout_width="272dp"
@@ -76,7 +82,10 @@
         android:layout_marginBottom="455dp"
         android:textStyle="bold"
         android:text="Contact Respective System Administrator or IT Coordinator"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        android:layout_marginRight="4dp"
+        android:layout_alignParentRight="true" />
 
 
     <TextView
@@ -90,6 +99,9 @@
         android:text="Contact No : 8563478952
                       Contact No : 7548693251"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        android:layout_marginRight="4dp"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
