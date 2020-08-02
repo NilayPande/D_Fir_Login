@@ -17,7 +17,7 @@
         <activity android:name=".DisplayCaseActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".NewCaseActivity" />
-        <activity android:name=".SearchActivity" />
+        <activity android:name=".SearchActivity" android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".SplashActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".FaqActivity" />

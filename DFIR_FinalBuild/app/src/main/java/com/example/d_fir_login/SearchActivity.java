@@ -2,33 +2,34 @@ package com.example.d_fir_login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.d_fir_login.Model.Case;
-import com.example.d_fir_login.RecycleView.AdapterClass;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
+import com.google.firebase.database.Query;
 
 public class SearchActivity extends AppCompatActivity {
 
-    ArrayList<Case> list;
-    SearchView searchView;
-    RecyclerView recyclerView;
-    FirebaseDatabase database;
-    DatabaseReference ref;
-    Button btnCreateNewCase;
+    private EditText searchView;
+    private RecyclerView recyclerView;
+    private FirebaseDatabase database;
+    private DatabaseReference ref;
+    private FirebaseRecyclerOptions<Case> options;
+    private Button btnCreateNewCase;
+    private PostAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,18 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         database = FirebaseDatabase.getInstance();
-        ref = database.getReference("Cases");
+        ref = database.getReference().child("Cases");
 
         recyclerView = findViewById(R.id.recyclerView);
         searchView = findViewById(R.id.searchView);
-
         btnCreateNewCase = findViewById(R.id.btnCreateNewCase);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        options = new FirebaseRecyclerOptions.Builder<Case>().setQuery(ref, Case.class).build();
+
+        adapter = new PostAdapter(options);
+        recyclerView.setAdapter(adapter);
 
         btnCreateNewCase.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,67 +58,69 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setVisibility(View.GONE);
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString() != null)
+                    LoadData(editable.toString());
+                else
+                    LoadData("");
+            }
+        });
     }
 
-    public void showCase(View view){
-        Intent intent = new Intent(SearchActivity.this, DisplayCaseActivity.class);
-        startActivity(intent);
+    private void LoadData(String s) {
+        Query query = ref.orderByChild("caseId").startAt(s).endAt(s + "\uf8ff");
+
+        options = new FirebaseRecyclerOptions.Builder<Case>().setQuery(query, Case.class).build();
+
+        adapter = new PostAdapter(options) {
+            @NonNull
+            @Override
+            public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_holder, parent, false);
+
+                return new PostViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull PostViewHolder holder, int position, @NonNull Case model) {
+                holder.caseId.setText(model.getCaseId());
+                holder.officerName.setText(model.getOfficerName());
+                holder.caseCategory.setText(model.getCaseCategory());
+                holder.timeStamp.setText(model.getTimeStamp());
+                holder.cardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(SearchActivity.this, DisplayCaseActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+        };
+        adapter.startListening();
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(ref != null){
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()){
-                        list = new ArrayList<>();
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                            list.add(dataSnapshot.getValue(Case.class));
-                        }
-                        AdapterClass adapterClass = new AdapterClass(list);
-                        recyclerView.setAdapter(adapterClass);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(SearchActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-
-                }
-            });
-        }
-        if(searchView != null){
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    search(s);
-                    return false;
-                }
-            });
-        }
-        else
-            Toast.makeText(this, "Nahi Chala", Toast.LENGTH_SHORT).show();
+        adapter.startListening();
     }
 
-    private void search(String s) {
-        ArrayList<Case> arrayList = new ArrayList<>();
-        for(Case obj : arrayList){
-            Toast.makeText(this, obj.getOfficerName() + " Hi", Toast.LENGTH_SHORT).show();
-            if(obj.getOfficerName().toLowerCase().contains(s.toLowerCase())){
-                arrayList.add(obj);
-            }
-        }
-        AdapterClass adapterClass = new AdapterClass(arrayList);
-        recyclerView.setAdapter(adapterClass);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
-
 }
