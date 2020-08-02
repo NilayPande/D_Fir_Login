@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -216,7 +217,11 @@ public class UploadActivity extends AppCompatActivity {
         //name = name.substring(0, name.indexOf("."));
         //caseFileName = caseFileName.substring(0, caseFileName.indexOf("."));
 
+        String str = secretKey.toString();
+        String encoded = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+
         databaseReference.child("Hash Values").child(txtEnterCaseId.getText().toString()).child(caseFileName2).setValue(sha256Hash);
+        databaseReference.child("Keys").child(txtEnterCaseId.getText().toString()).child(caseFileName2).setValue(encoded);
     }
 
     private void encryptFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, BadPaddingException, IllegalBlockSizeException {
